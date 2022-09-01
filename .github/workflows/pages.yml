@@ -15,6 +15,9 @@ permissions:
   pages: write
   id-token: write
 
+with:
+  deploy-key: ${{secrets.Pages_Deploy}}
+
 # Allow one concurrent deployment
 concurrency:
   group: "pages"
