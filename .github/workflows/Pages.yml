@@ -33,6 +33,7 @@ jobs:
           npm test      
       - name: deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v3
+        working-directory: ./project-page
         with:
           deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
           publish_dir: ./project-page     
