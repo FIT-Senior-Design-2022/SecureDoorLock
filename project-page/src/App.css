@@ -1,4 +1,4 @@
-.placeholder {
-  text-align: center;
-  align-self: center;
+
+#readerGroup {
+  -ms-flex-item-align: center;
 }
