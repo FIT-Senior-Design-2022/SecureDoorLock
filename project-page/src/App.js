@@ -1,13 +1,39 @@
-import React from "react";
+import * as React from 'react';
 
 import "./App.css";
-import Button from "@mui/material/Button";
-import ButtonGroup from "@mui/material/ButtonGroup";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import ProjectPlan from "./Tabs/ProjectPlan";
+import { Box } from "@mui/system";
+import { Tab, Tabs } from "@mui/material";
+
+
+function TabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          <div>{children}</div>
+        </Box>
+      )}
+    </div>
+  );
+}
 
 function App() {
+  const [value, setValue] = React.useState(0);
+  const handleOnTabChange = (event , newValue) => {
+    setValue(newValue);
+  };
+
   return (
     <div className="root">
       <div className="aboutUs">
@@ -44,17 +70,29 @@ function App() {
         }}
       >
         <CardContent>
-          <div>
-            <ButtonGroup>
-              <Button>Project Plan</Button>
-              <Button disabled>Milestone 1</Button>
-              <Button disabled>Milestone 2</Button>
-              <Button disabled>Milestone 3</Button>
-            </ButtonGroup>
-          </div>
-          <div>
-              <ProjectPlan />
-          </div>
+          <Box sx={{
+            borderBottom:1
+          }}>
+              <Tabs value={value} onChange={handleOnTabChange}>
+                <Tab label = "Project Plan"/>
+                <Tab label = "Milestone 1"/>
+                <Tab label = "Milestone 2"/>
+                <Tab label = "Milestone 3"/>
+              </Tabs>
+          </Box>
+          <TabPanel value={value} index={0}>
+            <h2>Project Plan</h2>
+            <ProjectPlan/>
+          </TabPanel>
+          <TabPanel value={value} index={1}>
+            <h2>Milestone 1</h2>
+          </TabPanel>
+          <TabPanel value={value} index={2}>
+            <h2>Milestone 2</h2>
+          </TabPanel>
+          <TabPanel value={value} index={3}>
+            <h2>Milestone 3</h2>
+          </TabPanel>
         </CardContent>
       </Card>
     </div>
