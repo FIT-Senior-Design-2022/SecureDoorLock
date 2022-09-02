@@ -4,24 +4,44 @@ import ButtonGroup from "@mui/material/ButtonGroup";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 
-
-
-
 function App() {
   return (
-    <div id="readerGroup">
+
+    <div class = 'root'>
+      <div class='aboutUs'>
+        <h1>About Us</h1>
+        <div class = 'infoCards'>
+          <Card sx={{minWidth:250,minHeight:200}}>
+            <CardContent sx={{
+              flexDirection:'column',
+              display: 'flex'
+            }}>
+              <text>Luke Bucher</text>
+              <a href="lbucher2017@fit.edu">lbucher2017@fit.edu</a>
+              <a href="https://github.com/LukeBucher">LukeBucher - Github</a>
+              <a href="www.linkedin.com/in/luke-bucher">LukeBucher - LinkedIn</a>
+
+
+            </CardContent>  
+          </Card>
+          <Card sx={{minWidth:200,minHeight:200}}>2</Card>
+          <Card sx={{minWidth:200,minHeight:200}}>3</Card>
+          <Card sx={{minWidth:200,minHeight:200}}>4</Card>
+
+        </div>
+      </div>
+    <div class='readerGroup' id="readerGroup">
+      <h1>About the Project</h1>
       <Card
         sx={{
           minHeight: 300,
-          display: "inline-flex",
+          display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
           boxShadow: 5,
         }}
       >
-        <CardContent sx={{
-          
-        }}>
+        <CardContent>
           <div>
             <ButtonGroup>
               <Button>Project Plan</Button>
@@ -32,9 +52,11 @@ function App() {
           </div>
           <div>
               <a href="./assets/SeniorProjectPlan.pdf">Project Plan</a>
+              <iframe src="./assets/SeniorProjectPlan.pdf"></iframe>
           </div>
         </CardContent>
       </Card>
+    </div>
     </div>
   );
 }
