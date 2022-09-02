@@ -52,7 +52,7 @@ function App() {
           </div>
           <div>
               <a href="./assets/SeniorProjectPlan.pdf">Project Plan</a>
-              <iframe src="./assets/SeniorProjectPlan.pdf"></iframe>
+              <iframe srcDoc="./assets/SeniorProjectPlan.pdf" title="Projet Plan"></iframe>
           </div>
         </CardContent>
       </Card>
