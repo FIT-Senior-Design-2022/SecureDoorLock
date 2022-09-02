@@ -3,7 +3,7 @@ import './App.css';
 function App() {
   return (
     <div class='placeholder'>
-      "Hello World"
+      "Hello  World"
     </div>
   );
 }
