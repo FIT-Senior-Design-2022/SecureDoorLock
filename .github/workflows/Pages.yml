@@ -1,38 +1,59 @@
 name: Deploy React Application
 
-# Controls when the action will run. 
+# Controls when the action will run.
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
   push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+    branches:
+      - master
+      - main
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  build_test:
-    # The type of runner that the job will run on
+  build:
+    name: Build
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [16.x] # We will deploy with only one version of node  
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v2
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v1
         with:
-          node-version: ${{ matrix.node-version }}
-      - name: npm ci, build and test
+          node-version: 16.x
+
+      - name: Install NPM packages
         working-directory: ./project-page
-        run: |
-          npm ci
-          npm run build 
-      - name: deploy to gh-pages
+        run: npm ci
+
+      - name: Build project
+        working-directory: ./project-page
+        run: npm run build
+
+#      - name: Run tests
+#        working-directory: ./project-page
+#        run: npm run test
+
+      - name: Upload production-ready build files
+        uses: actions/upload-artifact@v2
+        with:
+          name: production-files
+          path: ./project-page/build
+
+  deploy:
+    name: Deploy
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v2
+        with:
+          name: production-files
+          path: ./project-page/build
+
+      - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v3
         with:
-          deploy_key: ${{ secrets.ACTIONS_DEPLOY_KEY }}
-          publish_dir: ./docs
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./project-page/build
