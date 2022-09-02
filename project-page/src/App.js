@@ -1,22 +1,24 @@
+import React from "react";
+
 import "./App.css";
 import Button from "@mui/material/Button";
 import ButtonGroup from "@mui/material/ButtonGroup";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
+import ProjectPlan from "./Tabs/ProjectPlan";
 
 function App() {
   return (
-
-    <div class = 'root'>
-      <div class='aboutUs'>
+    <div className="root">
+      <div className="aboutUs">
         <h1>About Us</h1>
-        <div class = 'infoCards'>
+        <div className="infoCards">
           <Card sx={{minWidth:250,minHeight:200}}>
             <CardContent sx={{
               flexDirection:'column',
               display: 'flex'
             }}>
-              <text>Luke Bucher</text>
+              <span>Luke Bucher</span>
               <a href="lbucher2017@fit.edu">lbucher2017@fit.edu</a>
               <a href="https://github.com/LukeBucher">LukeBucher - Github</a>
               <a href="www.linkedin.com/in/luke-bucher">LukeBucher - LinkedIn</a>
@@ -30,7 +32,7 @@ function App() {
 
         </div>
       </div>
-    <div class='readerGroup' id="readerGroup">
+    <div className="readerGroup" id="readerGroup">
       <h1>About the Project</h1>
       <Card
         sx={{
@@ -51,8 +53,7 @@ function App() {
             </ButtonGroup>
           </div>
           <div>
-              <a href="./assets/SeniorProjectPlan.pdf">Project Plan</a>
-              <iframe src="./assets/SeniorProjectPlan.pdf" title="Projet Plan"></iframe>
+              <ProjectPlan />
           </div>
         </CardContent>
       </Card>
