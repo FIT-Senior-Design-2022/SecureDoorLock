@@ -2,9 +2,7 @@ import './App.css';
 
 function App() {
   return (
-    <div class='placeholder'>
-      "Hello  World"
-    </div>
+    <a href="assets/SeniorProjectPlan.pdf" target="_blank">Project Plan</a>
   );
 }
 
