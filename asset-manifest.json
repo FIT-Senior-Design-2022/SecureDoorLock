@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/SecureLock/static/css/main.9ea51f21.css",
+    "main.js": "/SecureLock/static/js/main.0d752a95.js",
+    "static/js/787.e6b8966f.chunk.js": "/SecureLock/static/js/787.e6b8966f.chunk.js",
+    "index.html": "/SecureLock/index.html",
+    "main.9ea51f21.css.map": "/SecureLock/static/css/main.9ea51f21.css.map",
+    "main.0d752a95.js.map": "/SecureLock/static/js/main.0d752a95.js.map",
+    "787.e6b8966f.chunk.js.map": "/SecureLock/static/js/787.e6b8966f.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.9ea51f21.css",
+    "static/js/main.0d752a95.js"
+  ]
+}
