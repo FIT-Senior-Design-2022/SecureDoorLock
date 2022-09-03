@@ -75,9 +75,9 @@ function App() {
           }}>
               <Tabs value={value} onChange={handleOnTabChange}>
                 <Tab label = "Project Plan"/>
-                <Tab label = "Milestone 1"/>
-                <Tab label = "Milestone 2"/>
-                <Tab label = "Milestone 3"/>
+                <Tab disabled label = "Milestone 1"/>
+                <Tab disabled label = "Milestone 2"/>
+                <Tab disabled label = "Milestone 3"/>
               </Tabs>
           </Box>
           <TabPanel value={value} index={0}>

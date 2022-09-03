@@ -3,7 +3,10 @@ import DocumentLayout from "../../Components/DocumentLayout";
 
 export const ProjectPlan = () => {
   return (
-    <DocumentLayout />
+    <DocumentLayout documentlist={[
+      {name:"Project Plan",target:"SeniorProjectPlan.pdf"},
+      {name:"Project Presentation",target:""}
+    ]}/>
   );
 }
 
