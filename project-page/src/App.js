@@ -45,17 +45,43 @@ function App() {
               display: 'flex'
             }}>
               <span>Luke Bucher</span>
-              <a href="lbucher2017@fit.edu">lbucher2017@fit.edu</a>
-              <a href="https://github.com/LukeBucher">LukeBucher - Github</a>
-              <a href="www.linkedin.com/in/luke-bucher">LukeBucher - LinkedIn</a>
+              <a href="lbucher2017@my.fit.edu">lbucher2017@fit.edu</a>
+              <a href="https://github.com/LukeBucher">Github</a>
+              <a href="www.linkedin.com/in/luke-bucher">LinkedIn</a>
 
 
             </CardContent>  
           </Card>
-          <Card sx={{minWidth:200,minHeight:200}}>2</Card>
-          <Card sx={{minWidth:200,minHeight:200}}>3</Card>
-          <Card sx={{minWidth:200,minHeight:200}}>4</Card>
+          <Card sx={{minWidth:200,minHeight:200}}>
+          <CardContent sx={{
+              flexDirection:'column',
+              display: 'flex'
+            }}>
+          <span>Warren Smith</span>
+              <a href="wsmith2019@my.fit.edu">wsmith2019@fit.edu</a>
+              <a href="https://github.com/warosm">Github</a>
+              <a href="https://www.linkedin.com/in/warren-smith-95396b206/">LinkedIn</a>
+          </CardContent>
+          </Card>
 
+          <Card sx={{minWidth:200,minHeight:200}}>
+          <CardContent sx={{
+              flexDirection:'column',
+              display: 'flex'
+            }}>
+          <span>James Pabisz</span>
+              <a href="jpabisz2020@my.fit.edu">jpabisz2020@fit.edu</a>
+          </CardContent>
+          </Card>
+          <Card sx={{minWidth:200,minHeight:200}}>
+          <CardContent sx={{
+              flexDirection:'column',
+              display: 'flex'
+            }}>
+          <span>Chris Kiefer</span>
+              <a href="ckiefer2019@my.fit.edu">ckiefer2019@fit.edu</a>
+          </CardContent>
+          </Card>
         </div>
       </div>
     <div className="readerGroup" id="readerGroup">

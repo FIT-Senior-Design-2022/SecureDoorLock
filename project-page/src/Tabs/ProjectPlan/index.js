@@ -5,7 +5,7 @@ export const ProjectPlan = () => {
   return (
     <DocumentLayout documentlist={[
       {name:"Project Plan",target:"SeniorProjectPlan.pdf"},
-      {name:"Project Presentation",target:""}
+      {name:"Project Presentation",target:"ProjectPlanSecureDoorLock.pdf"}
     ]}/>
   );
 }
