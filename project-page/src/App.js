@@ -1,11 +1,9 @@
 import * as React from 'react';
 
 import "./App.css";
-import Card from "@mui/material/Card";
-import CardContent from "@mui/material/CardContent";
 import ProjectPlan from "./Tabs/ProjectPlan";
 import { Box } from "@mui/system";
-import { AppBar, Button, Tab, Tabs, Toolbar } from "@mui/material";
+import { AppBar, Button, Tab, Tabs, Toolbar, Card, CardContent } from "@mui/material";
 import { createTheme } from '@mui/material/styles';
 
 const theme = createTheme({
