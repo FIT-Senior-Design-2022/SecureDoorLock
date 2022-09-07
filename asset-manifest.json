@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/SecureDoorLock/static/css/main.70905482.css",
-    "main.js": "/SecureDoorLock/static/js/main.0aeb3375.js",
+    "main.css": "/SecureDoorLock/static/css/main.54601afa.css",
+    "main.js": "/SecureDoorLock/static/js/main.b0924728.js",
     "static/js/787.e6b8966f.chunk.js": "/SecureDoorLock/static/js/787.e6b8966f.chunk.js",
     "index.html": "/SecureDoorLock/index.html",
-    "main.70905482.css.map": "/SecureDoorLock/static/css/main.70905482.css.map",
-    "main.0aeb3375.js.map": "/SecureDoorLock/static/js/main.0aeb3375.js.map",
+    "main.54601afa.css.map": "/SecureDoorLock/static/css/main.54601afa.css.map",
+    "main.b0924728.js.map": "/SecureDoorLock/static/js/main.b0924728.js.map",
     "787.e6b8966f.chunk.js.map": "/SecureDoorLock/static/js/787.e6b8966f.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.70905482.css",
-    "static/js/main.0aeb3375.js"
+    "static/css/main.54601afa.css",
+    "static/js/main.b0924728.js"
   ]
 }
