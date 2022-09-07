@@ -5,7 +5,24 @@ import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import ProjectPlan from "./Tabs/ProjectPlan";
 import { Box } from "@mui/system";
-import { Tab, Tabs } from "@mui/material";
+import { AppBar, Button, Tab, Tabs, Toolbar } from "@mui/material";
+import { createTheme } from '@mui/material/styles';
+
+const theme = createTheme({
+  status: {
+    danger: '#e53e3e',
+  },
+  palette: {
+    primary: {
+      main: '#0971f1',
+      darker: '#053e85',
+    },
+    neutral: {
+      main: '#64748B',
+      contrastText: '#fff',
+    },
+  },
+});
 
 
 function TabPanel(props) {
@@ -36,8 +53,19 @@ function App() {
 
   return (
     <div className="root">
+      <div className="navBar">
+        <AppBar position='sticky'>
+          <Toolbar>Secure Door Lock</Toolbar>
+        </AppBar>
+      </div>
+      <div className="whatWeDo">
+        <span>We strive to bring secure technologoy right to your front door</span>
+        <Button 
+        varient="contained"
+        >Go to the App</Button>
+      </div>
       <div className="aboutUs">
-        <h1>About Us</h1>
+        <h1>Who We Are</h1>
         <div className="infoCards">
           <Card sx={{minWidth:250,minHeight:200}}>
             <CardContent sx={{
@@ -88,7 +116,6 @@ function App() {
       <h1>About the Project</h1>
       <Card
         sx={{
-          minHeight: 300,
           display: "flex",
           flexDirection: "column",
           justifyContent: "space-between",
