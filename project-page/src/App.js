@@ -47,6 +47,16 @@ function App() {
       <div className="aboutUs">
         <h1>Who We Are</h1>
         <div className="infoCards">
+        <Card sx={{minWidth:250,minHeight:200}}>
+            <CardContent sx={{
+              flexDirection:'column',
+              display: 'flex'
+            }}>
+              <span>Project Advisor-</span>
+              <span>Dr. Marius Silaghi</span>
+              <a href="msilaghi@fit.edu">msilaghi@fit.edu</a>
+            </CardContent>  
+          </Card>
           <Card sx={{minWidth:250,minHeight:200}}>
             <CardContent sx={{
               flexDirection:'column',
@@ -111,20 +121,36 @@ function App() {
                 <Tab disabled label = "Milestone 1"/>
                 <Tab disabled label = "Milestone 2"/>
                 <Tab disabled label = "Milestone 3"/>
+                <Tab disabled label = "Project Plan"/>
+                <Tab disabled label = "Milestone 4"/>
+                <Tab disabled label = "Milestone 5"/>
+                <Tab disabled label = "Milestone 6"/>
               </Tabs>
           </Box>
           <TabPanel value={value} index={0}>
-            <h2>Project Plan</h2>
+            <h2>Project Plan - Sep 7</h2>
             <ProjectPlan/>
           </TabPanel>
           <TabPanel value={value} index={1}>
-            <h2>Milestone 1</h2>
+            <h2>Milestone 1 - Oct 3</h2>
           </TabPanel>
           <TabPanel value={value} index={2}>
-            <h2>Milestone 2</h2>
+            <h2>Milestone 2 - Oct 31</h2>
           </TabPanel>
           <TabPanel value={value} index={3}>
-            <h2>Milestone 3</h2>
+            <h2>Milestone 3 - Nov 28</h2>
+          </TabPanel>
+          <TabPanel value={value} index={4}>
+            <h2>Project Plan - Jan 16</h2>
+          </TabPanel>
+          <TabPanel value={value} index={5}>
+            <h2>Milestone 4 - Feb 13</h2>
+          </TabPanel>
+          <TabPanel value={value} index={6}>
+            <h2>Milestone 5 - Mar 20</h2>
+          </TabPanel>
+          <TabPanel value={value} index={7}>
+            <h2>Milestone 6 - Apr 17</h2>
           </TabPanel>
         </CardContent>
       </Card>
