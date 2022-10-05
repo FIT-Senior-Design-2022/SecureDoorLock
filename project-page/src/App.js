@@ -2,6 +2,7 @@ import * as React from 'react';
 
 import "./App.css";
 import ProjectPlan from "./Tabs/ProjectPlan";
+import MileStone1 from './Tabs/Milestone1';
 import { Box } from "@mui/system";
 import { AppBar, Button, Tab, Tabs, Toolbar, Card, CardContent } from "@mui/material";
 
@@ -118,7 +119,7 @@ function App() {
           }}>
               <Tabs value={value} onChange={handleOnTabChange}>
                 <Tab label = "Project Plan"/>
-                <Tab disabled label = "Milestone 1"/>
+                <Tab label = "Milestone 1"/>
                 <Tab disabled label = "Milestone 2"/>
                 <Tab disabled label = "Milestone 3"/>
                 <Tab disabled label = "Project Plan"/>
@@ -133,6 +134,7 @@ function App() {
           </TabPanel>
           <TabPanel value={value} index={1}>
             <h2>Milestone 1 - Oct 3</h2>
+            <MileStone1/>
           </TabPanel>
           <TabPanel value={value} index={2}>
             <h2>Milestone 2 - Oct 31</h2>
