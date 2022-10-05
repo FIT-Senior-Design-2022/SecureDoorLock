@@ -133,7 +133,7 @@ function App() {
             <ProjectPlan/>
           </TabPanel>
           <TabPanel value={value} index={1}>
-            <h2>Milestone 1 - Oct 3</h2>
+            <h2>Milestone 1 - Oct 5</h2>
             <MileStone1/>
           </TabPanel>
           <TabPanel value={value} index={2}>
