@@ -122,7 +122,7 @@ function App() {
                 <Tab label = "Milestone 1"/>
                 <Tab disabled label = "Milestone 2"/>
                 <Tab disabled label = "Milestone 3"/>
-                <Tab disabled label = "Project Plan"/>
+                <Tab disabled label = "Project Plan Semester 2"/>
                 <Tab disabled label = "Milestone 4"/>
                 <Tab disabled label = "Milestone 5"/>
                 <Tab disabled label = "Milestone 6"/>
