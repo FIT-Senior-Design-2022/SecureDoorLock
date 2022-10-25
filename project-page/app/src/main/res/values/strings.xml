@@ -1,6 +1,0 @@
-<resources>
-    <string name="app_name">DoorLockApp</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">My Devices</string>
-    <string name="title_notifications">Facial Profiles</string>
-</resources>
