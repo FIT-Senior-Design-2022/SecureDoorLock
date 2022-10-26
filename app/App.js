@@ -1,6 +1,6 @@
 import React from 'react';
-import type {Node} from 'react';
 import {
+  Button,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -10,20 +10,16 @@ import {
   View,
 } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+import {Colors} from 'react-native/Libraries/NewAppScreen';
+import {NavigationContainer} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 
-
+const Stack = createNativeStackNavigator();
 
 /* $FlowFixMe[missing-local-annot] The type annotation(s) required by Flow's
  * LTI update could not be added via codemod */
 
-const Section = ({children, title}): Node => {
+const Section = ({children, title}) => {
   const isDarkMode = useColorScheme() === 'dark';
   return (
     <View style={styles.sectionContainer}>
@@ -49,7 +45,7 @@ const Section = ({children, title}): Node => {
   );
 };
 
-const App: () => Node = () => {
+const App = Section => {
   const isDarkMode = useColorScheme() === 'dark';
 
   const backgroundStyle = {
@@ -57,10 +53,31 @@ const App: () => Node = () => {
   };
 
   return (
-    <form name='Login' action='' method='GET'>
-      <input type="text"></input>
-    </form>
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen name="Login" component={LoginScreen} />
+
+        <Stack.Screen name="Home" component={HomeScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
+};
+
+const LoginScreen = ({navigation, Section}) => {
+  return (
+    <View style = {styles.sectionContainer}>
+      <Button
+        title="Log in"
+        onPress={() => {
+          navigation.navigate('Home');
+        }}
+      />
+    </View>
+  );
+};
+
+const HomeScreen = ({navigation}) => {
+  return <Text>Works</Text>;
 };
 
 const styles = StyleSheet.create({
