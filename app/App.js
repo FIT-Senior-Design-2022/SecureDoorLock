@@ -6,6 +6,7 @@ import {
   StatusBar,
   StyleSheet,
   Text,
+  TextInput,
   useColorScheme,
   View,
 } from 'react-native';
@@ -64,14 +65,30 @@ const App = Section => {
 };
 
 const LoginScreen = ({navigation, Section}) => {
+  
+  const [user, onChangeUsername] = React.useState();
+  const [password, onChangePassword] = React.useState();
+
   return (
-    <View style = {styles.sectionContainer}>
-      <Button
-        title="Log in"
-        onPress={() => {
-          navigation.navigate('Home');
-        }}
-      />
+    <View style={styles.sectionContainer}>
+        <TextInput
+          keyboardType="email-address"
+          style={styles.input}
+          placeholder="Email"
+          name="Email"
+          onChangeText={onChangeUsername}
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          secureTextEntry={true}
+          name="Password"
+          onChangeText={onChangePassword}
+        />
+        <Button title="Login" onPress={() => {
+          alert(user + ' ' + password);
+          navigation.navigate('Home');}
+          } />
     </View>
   );
 };
@@ -96,6 +113,12 @@ const styles = StyleSheet.create({
   },
   highlight: {
     fontWeight: '700',
+  },
+  input: {
+    height: 40,
+    margin: 12,
+    borderWidth: 0.5,
+    padding: 10,
   },
 });
 
