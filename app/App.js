@@ -79,6 +79,7 @@ const LoginScreen = ({navigation, Section}) => {
           onChangeText={onChangeUsername}
         />
         <TextInput
+          autoComplete= "password"
           style={styles.input}
           placeholder="Password"
           secureTextEntry={true}
