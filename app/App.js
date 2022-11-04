@@ -57,7 +57,6 @@ const App = Section => {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen name="Login" component={LoginScreen} />
-
         <Stack.Screen name="Home" component={HomeScreen} />
       </Stack.Navigator>
     </NavigationContainer>
@@ -65,37 +64,43 @@ const App = Section => {
 };
 
 const LoginScreen = ({navigation, Section}) => {
-  
   const [user, onChangeUsername] = React.useState();
   const [password, onChangePassword] = React.useState();
 
   return (
     <View style={styles.sectionContainer}>
-        <TextInput
-          keyboardType="email-address"
-          style={styles.input}
-          placeholder="Email"
-          name="Email"
-          onChangeText={onChangeUsername}
-        />
-        <TextInput
-          autoComplete= "password"
-          style={styles.input}
-          placeholder="Password"
-          secureTextEntry={true}
-          name="Password"
-          onChangeText={onChangePassword}
-        />
-        <Button title="Login" onPress={() => {
-          alert(user + ' ' + password);
-          navigation.navigate('Home');}
-          } />
+      <TextInput
+        keyboardType="email-address"
+        style={styles.input}
+        placeholder="Email"
+        name="Email"
+        onChangeText={onChangeUsername}
+      />
+      <TextInput
+        autoComplete="password"
+        style={styles.input}
+        placeholder="Password"
+        secureTextEntry={true}
+        name="Password"
+        onChangeText={onChangePassword}
+      />
+      <Button
+        title="Login"
+        onPress={() => {
+          alert("Authentication Failed");
+          //navigation.navigate('Home');
+        }}
+      />
     </View>
   );
 };
 
 const HomeScreen = ({navigation}) => {
-  return <Text>Works</Text>;
+  return (
+    <View style={styles.sectionContainer}>
+      <Text fontSize={120}>Dashboard goes here</Text>
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
