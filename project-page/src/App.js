@@ -6,6 +6,7 @@ import MileStone1 from './Tabs/Milestone1';
 import MileStone2 from './Tabs/Milestone2';
 import { Box } from "@mui/system";
 import { AppBar, Button, Tab, Tabs, Toolbar, Card, CardContent } from "@mui/material";
+import MileStone3 from './Tabs/Milestone3';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -122,7 +123,7 @@ function App() {
                 <Tab label = "Project Plan"/>
                 <Tab label = "Milestone 1"/>
                 <Tab label = "Milestone 2"/>
-                <Tab disabled label = "Milestone 3"/>
+                <Tab label = "Milestone 3"/>
                 <Tab disabled label = "Project Plan Semester 2"/>
                 <Tab disabled label = "Milestone 4"/>
                 <Tab disabled label = "Milestone 5"/>
@@ -143,6 +144,7 @@ function App() {
           </TabPanel>
           <TabPanel value={value} index={3}>
             <h2>Milestone 3 - Nov 28</h2>
+            <MileStone3/>
           </TabPanel>
           <TabPanel value={value} index={4}>
             <h2>Project Plan - Jan 16</h2>
