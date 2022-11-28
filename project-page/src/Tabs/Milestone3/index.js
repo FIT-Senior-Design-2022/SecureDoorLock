@@ -4,7 +4,7 @@ import DocumentLayout from "../../Components/DocumentLayout";
 export const MileStone3 = () => {
   return (
     <DocumentLayout documentlist={[
-        {name:"Progress Evaluation",target:"SecureDoorOpenerMilestone3.pdf"},
+        {name:"Progress Evaluation",target:"SecureDoorLockMilestone3.pdf"},
         {name:"Milestone Presentation",target:"SecureDoorLockMilestone3Presentation.pdf"},
     ]}/>
   );
