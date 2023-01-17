@@ -7,6 +7,7 @@ import MileStone2 from './Tabs/Milestone2';
 import { Box } from "@mui/system";
 import { AppBar, Button, Tab, Tabs, Toolbar, Card, CardContent } from "@mui/material";
 import MileStone3 from './Tabs/Milestone3';
+import { ProfileCard } from './Components/ProfileCard';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -41,70 +42,65 @@ function App() {
           <Toolbar>Secure Door Lock</Toolbar>
         </AppBar>
       </div>
+
       <div className="whatWeDo">
-        <span>We strive to bring secure technologoy right to your front door</span>
-        <Button 
-        varient="contained"
-        >Go to the App</Button>
+        <Card>
+          <CardContent sx={{
+            display: 'flex',
+            flexdirection:'column',
+            maxWidth: 400
+          }}>
+            <h3>We strive to bring secure technology right to your front door</h3>
+            <Button variant="contained">
+              <h3>Go to the App</h3>
+            </Button>
+          </CardContent>
+        </Card>
+        
+
       </div>
       <div className="aboutUs">
         <h1>Who We Are</h1>
-        <div className="infoCards">
+        <div className="infoCards"> 
         <Card sx={{minWidth:250,minHeight:200}}>
             <CardContent sx={{
               flexDirection:'column',
               display: 'flex'
             }}>
-              <span>Project Advisor-</span>
+              <span>Project Advisor</span>
               <span>Dr. Marius Silaghi</span>
-              <a href="msilaghi@fit.edu">msilaghi@fit.edu</a>
+              <a href="msilaghi@fit.edu">Email</a>
+              <a href='https://www.fit.edu/faculty-profiles/s/silaghi-marius/'>Faculty Profile</a>
             </CardContent>  
           </Card>
-          <Card sx={{minWidth:250,minHeight:200}}>
-            <CardContent sx={{
-              flexDirection:'column',
-              display: 'flex'
-            }}>
-              <span>Luke Bucher</span>
-              <a href="lbucher2017@my.fit.edu">lbucher2017@fit.edu</a>
-              <a href="https://github.com/LukeBucher">Github</a>
-              <a href="www.linkedin.com/in/luke-bucher">LinkedIn</a>
 
+          <ProfileCard 
+            profilename={"Luke Bucher"}
+            profileemail={"lbucher2017@my.fit.edu"}
+            profilegithub={"https://github.com/LukeBucher"}
+            profilelinkedin={"https://linkedin.com/in/luke-bucher"}
+          />
 
-            </CardContent>  
-          </Card>
-          <Card sx={{minWidth:200,minHeight:200}}>
-          <CardContent sx={{
-              flexDirection:'column',
-              display: 'flex'
-            }}>
-          <span>Warren Smith</span>
-              <a href="wsmith2019@my.fit.edu">wsmith2019@fit.edu</a>
-              <a href="https://github.com/warosm">Github</a>
-              <a href="https://www.linkedin.com/in/warren-smith-95396b206/">LinkedIn</a>
-          </CardContent>
-          </Card>
+          <ProfileCard
+            profilename={"Warren Smith"}
+            profileemail={"wsmith2019@my.fit.edu"}
+            profilegithub={"https://github.com/warosm"}
+            profilelinkedin={"https://www.linkedin.com/in/warren-smith-95396b206/"}
+          />
 
-          <Card sx={{minWidth:200,minHeight:200}}>
-          <CardContent sx={{
-              flexDirection:'column',
-              display: 'flex'
-            }}>
-          <span>James Pabisz</span>
-              <a href="jpabisz2020@my.fit.edu">jpabisz2020@fit.edu</a>
-          </CardContent>
-          </Card>
-          <Card sx={{minWidth:200,minHeight:200}}>
-          <CardContent sx={{
-              flexDirection:'column',
-              display: 'flex'
-            }}>
-          <span>Chris Kiefer</span>
-              <a href="ckiefer2019@my.fit.edu">ckiefer2019@fit.edu</a>
-          </CardContent>
-          </Card>
+          <ProfileCard
+            profilename={"James Pabisz"}
+            profileemail={"jpabisz2020@my.fit.edu"}
+          />
+
+          <ProfileCard
+            profilename={"Chris Kiefer"}
+            profileemail={"ckiefer2019@my.fit.edu"}
+          />
         </div>
       </div>
+
+
     <div className="readerGroup" id="readerGroup">
       <h1>About the Project</h1>
       <Card
@@ -124,10 +120,10 @@ function App() {
                 <Tab label = "Milestone 1"/>
                 <Tab label = "Milestone 2"/>
                 <Tab label = "Milestone 3"/>
-                <Tab disabled label = "Project Plan Semester 2"/>
-                <Tab disabled label = "Milestone 4"/>
-                <Tab disabled label = "Milestone 5"/>
-                <Tab disabled label = "Milestone 6"/>
+                <Tab label = "Project Plan Semester 2"/>
+                <Tab label = "Milestone 4"/>
+                <Tab label = "Milestone 5"/>
+                <Tab label = "Milestone 6"/>
               </Tabs>
           </Box>
           <TabPanel value={value} index={0}>
@@ -147,7 +143,7 @@ function App() {
             <MileStone3/>
           </TabPanel>
           <TabPanel value={value} index={4}>
-            <h2>Project Plan - Jan 16</h2>
+            <h2>Project Plan - Jan 18</h2>
           </TabPanel>
           <TabPanel value={value} index={5}>
             <h2>Milestone 4 - Feb 13</h2>
