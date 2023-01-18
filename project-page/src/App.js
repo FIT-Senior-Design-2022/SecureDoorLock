@@ -8,6 +8,7 @@ import { Box } from "@mui/system";
 import { AppBar, Button, Tab, Tabs, Toolbar, Card, CardContent } from "@mui/material";
 import MileStone3 from './Tabs/Milestone3';
 import { ProfileCard } from './Components/ProfileCard';
+import { ProjectPlanSem2 } from './Tabs/ProjectPlan-Sem2';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -144,6 +145,7 @@ function App() {
           </TabPanel>
           <TabPanel value={value} index={4}>
             <h2>Project Plan - Jan 18</h2>
+            <ProjectPlanSem2/>
           </TabPanel>
           <TabPanel value={value} index={5}>
             <h2>Milestone 4 - Feb 13</h2>
