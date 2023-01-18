@@ -8,7 +8,7 @@ import { Box } from "@mui/system";
 import { AppBar, Button, Tab, Tabs, Toolbar, Card, CardContent } from "@mui/material";
 import MileStone3 from './Tabs/Milestone3';
 import { ProfileCard } from './Components/ProfileCard';
-import { ProjectPlanSem2 } from './Tabs/ProjectPlan-Sem2';
+import { ProjectPlanSem2 } from './Tabs/ProjectPlanSem2';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
