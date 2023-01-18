@@ -10,4 +10,4 @@ export const ProjectPlanSem2 = () => {
   );
 }
 
-export default ProjectPlan;
+export default ProjectPlanSem2;
