@@ -9,6 +9,7 @@ import { AppBar, Button, Tab, Tabs, Toolbar, Card, CardContent } from "@mui/mate
 import MileStone3 from './Tabs/Milestone3';
 import { ProfileCard } from './Components/ProfileCard';
 import { ProjectPlanSem2 } from './Tabs/ProjectPlanSem2';
+import MileStone4 from './Tabs/Milestone4';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -149,6 +150,7 @@ function App() {
           </TabPanel>
           <TabPanel value={value} index={5}>
             <h2>Milestone 4 - Feb 13</h2>
+            <MileStone4/>
           </TabPanel>
           <TabPanel value={value} index={6}>
             <h2>Milestone 5 - Mar 20</h2>
