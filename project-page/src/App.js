@@ -155,7 +155,7 @@ function App() {
           </TabPanel>
           <TabPanel value={value} index={6}>
             <h2>Milestone 5 - Mar 20</h2>
-            <Milestone5/>
+            <MileStone5/>
           </TabPanel>
           <TabPanel value={value} index={7}>
             <h2>Milestone 6 - Apr 17</h2>

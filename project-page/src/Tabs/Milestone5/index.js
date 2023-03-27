@@ -1,7 +1,7 @@
 import React from 'react';
 import DocumentLayout from "../../Components/DocumentLayout";
 
-export const Milestone5 = () => {
+export const MileStone5 = () => {
   return (
     <DocumentLayout documentlist={[
         {name:"Progress Evaluation",target:"Milestone5SecureDoorLock.pdf"},
@@ -12,4 +12,4 @@ export const Milestone5 = () => {
   );
 }
 
-export default Milestone5;
+export default MileStone5;
