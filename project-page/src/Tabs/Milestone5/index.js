@@ -1,7 +1,7 @@
 import React from 'react';
 import DocumentLayout from "../../Components/DocumentLayout";
 
-export const MileStone5 = () => {
+export const Milestone5 = () => {
   return (
     <DocumentLayout documentlist={[
         {name:"Progress Evaluation",target:"Milestone5SecureDoorLock.pdf"},
