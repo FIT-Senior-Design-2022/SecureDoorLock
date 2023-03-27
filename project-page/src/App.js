@@ -10,6 +10,7 @@ import MileStone3 from './Tabs/Milestone3';
 import { ProfileCard } from './Components/ProfileCard';
 import { ProjectPlanSem2 } from './Tabs/ProjectPlanSem2';
 import MileStone4 from './Tabs/Milestone4';
+import { MileStone5 } from './Tabs/Milestone5';
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -154,6 +155,7 @@ function App() {
           </TabPanel>
           <TabPanel value={value} index={6}>
             <h2>Milestone 5 - Mar 20</h2>
+            <MileStone5/>
           </TabPanel>
           <TabPanel value={value} index={7}>
             <h2>Milestone 6 - Apr 17</h2>
