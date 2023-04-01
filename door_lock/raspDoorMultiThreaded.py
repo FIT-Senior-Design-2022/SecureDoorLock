@@ -59,27 +59,50 @@ def unlock_door():
     
     return False
 
-async def send_and_receive_message(url, message=None):
-    async with websockets.connect(url) as websocket:
-        if message:
-            await websocket.send(message)
 
-        response = await websocket.recv()
-    return response
+websocket = None
 
-async def listen_for_server_input():
+async def websocket_client(uri):
+    global websocket
     while True:
-        # Check if the server sends a command to unlock the door
-        response = await send_and_receive_message(SERVER_URL + '/server_command')
-        command_data = json.loads(response)
-        command = command_data.get('unlock', None)
+        try:
+            async with websockets.connect(uri) as ws:
+                websocket = ws
+                # Send a message to the WebSocket server
+                await websocket.send(json.dumps({'type': 'init', 'content': 'door-lock-0'}))
 
+                # Receive messages from the WebSocket server
+                while True:
+                    response = await websocket.recv()
+                    if response:
+                        process_server_message(response)
+        except websockets.ConnectionClosed:
+            print("Connection lost: trying to reconnect...")
+            await asyncio.sleep(3)  # Wait for 5 seconds before attempting to reconnect
+            
+        except asyncio.TimeoutError:
+            print("Timeout: trying to reconnect...")
+            await asyncio.sleep(3)  # Wait for 5 seconds before attempting to reconnect
+
+async def send_message(message):
+    global websocket
+    if websocket is not None:
+        await websocket.send(message)
+        
+
+async def process_server_message(response, face=True):
+    command_data = json.loads(response)
+    command_type = command_data.get('type', None)
+    if command_type == 'unlock':
+        command = command_data.get('content', None)
         if command is not None:
             # Unlock the door if the server sends the unlock command
             if command:
                 unlock_door()
                 time.sleep(10)  # Keep the door unlocked for 10 seconds
                 lock_door()
+            return face
+            
 
 def upload_to_s3(image_path):
     s3 = boto3.client('s3')
@@ -109,8 +132,8 @@ def main():
 
     door_status = lock_door()
     
-    # Start a separate thread to listen for server input
-    server_input_thread = threading.Thread(target=lambda: asyncio.run(listen_for_server_input()))
+    # Start a separate thread to listen for server input and keep the connection open
+    server_input_thread = threading.Thread(target=lambda: asyncio.run(websocket_client(SERVER_URL)))
     server_input_thread.start()
     
 
@@ -149,30 +172,37 @@ def main():
                 guest_name = search_face_in_collection(s3_image_url)
 
                 # Notify the server about the face detection and guest_name
-                response = send_and_receive_message(SERVER_URL + '/face_detected', json.dumps({
-                    'external_ip': 'your-external-ip',
-                    'guest_name': guest_name
+                send_message(json.dumps({
+                    'type': 'face_detected',
+                    'content':  guest_name
                 }))
 
         else:
             # Forward the video feed to the server
             ret, buffer = cv2.imencode('.jpg', frame)
-            send_and_receive_message(SERVER_URL + '/video_feed', buffer.tobytes())
-
+            await send_message(json.dumps({
+                'type': 'video_feed',
+                'content': buffer.tobytes()
+            }))
+            
             # Check if the server received a response from the user
-            response = send_and_receive_message(SERVER_URL + '/user_decision')
-            decision_data = json.loads(response)
-            decision = decision_data.get('unlock', None)
+            response = None  # Reset the response variable
+            if websocket and websocket.open:
+                try:
+                    response = await asyncio.wait_for(websocket.recv(), timeout=1)
+                except asyncio.TimeoutError:
+                    pass  # No response received within the timeout
+            
+            if response:
+                process_server_message(response)
 
-            if decision is not None:
-                # Unlock the door if the user allows it
-                if decision:
-                    unlock_door()
-                    time.sleep(10)  # Keep the door unlocked for 10 seconds
-                    lock_door()
+                # Check if the response is of the 'unlock' type
+                decision_data = json.loads(response)
 
-                # Stop forwarding the video feed
-                face_detected = False
+                if decision_data.get('type', '') == 'unlock':
+                    # Stop forwarding the video feed
+                    face_detected = False
+
 
     cap.release()
     cv2.destroyAllWindows()
