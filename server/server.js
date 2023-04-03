@@ -1,10 +1,12 @@
 const http = require("http");
 const fs = require("fs");
 const WebSocket = require("ws");
-const hostname = "97.102.65.205";
+const hostname = "10.154.2.38";
 
-const httpPort = 9999;
-const wsPort = 3600;
+const httpPort = 3000;
+const wsPort = 3001;
+
+var doorlock;
 
 const options = {
   key: fs.readFileSync("../server/secrets/key.pem"),
@@ -12,11 +14,30 @@ const options = {
 };
 
 const server = http.createServer(options, (req, res) => {
-  if (req.url === "/unlock") {
+  if (req.url === "/Unlock") {
     // Handle unlock request from the mobile app
-    res.writeHead(200, { "Content-Type": "text/plain" });
-    res.end("Unlock request received from mobile app");
+    doorlock.send("Command:Unlock");
+    res.writeHead(200, { "Content-Type": "application/json" });
+    const responseData = {
+      doorStatus: "Unlocked",
+      lockState: "Lock",
+    };
+    res.end(JSON.stringify(responseData));
     console.log("Unlock request received from mobile app");
+  } else if (req.url === "/Lock") {
+    doorlock.send("Command:Lock");
+    res.writeHead(200, { "Content-Type": "application/json" });
+    const responseData = {
+      doorStatus: "Lock",
+      lockState: "Unlock",
+    };
+    res.end(JSON.stringify(responseData));
+    console.log("Lock request received from mobile app");
+  } else if (req.url === "/VideoFeed") {
+    doorlock.send("Command:VideoFeed");
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end();
+    console.log("Video request received from mobile app");
   } else {
     res.writeHead(400);
     res.end("Unknown");
@@ -33,13 +54,8 @@ server.listen(httpPort, hostname, () => {
 const wsServer = new WebSocket.Server({ port: wsPort });
 
 wsServer.on("connection", (socket) => {
+  doorlock = socket;
   console.log("New WebSocket connection");
-
-  socket.on("message", (message) => {
-    console.log(`Received message from lock: ${message}`);
-  });
-
-  socket.send("Welcome to the WebSocket server!");
 });
 
 console.log(`WebSocket server running at ws://${hostname}:${wsPort}/`);
