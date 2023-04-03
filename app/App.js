@@ -50,14 +50,14 @@ const App = Section => {
   );
 };
 
-const LockButton = () => {
+const LockButton = ({selected}) => {
   const [lockState, setlockState] = useState('Unlock');
 
   async function Unlock(lockState) {
     const body = JSON.stringify({
       lockState: lockState,
     });
-    fetch(serv_url + lockState);
+    fetch(serv_url + lockState); //add response code here
     setlockState(lockState === 'Unlock' ? 'Lock' : 'Unlock');
   }
 
@@ -72,7 +72,7 @@ const LockButton = () => {
   );
 };
 
-const VideoFeed = () => {
+const VideoFeed = ({selected}) => {
   async function viewFeed() {
     fetch(serv_url + 'VideoFeed');
     //We need to start a new component here and change the current view
@@ -98,21 +98,26 @@ const HomeScreen = ({navigation}) => {
   const [selected, setSelected] = useState(data);
   return (
     <View style={styles.homeScreenContainer}>
-      <View style={styles.homeScreensectionContainer}>
-        <SelectList
-          setSelected={val => setSelected(val)}
-          search={false}
-          data={data}
-          defaultOption={selected}
-          save="value"
-        />
-        <View style={styles.homeScreenContainer}>
-          <LockButton styles={styles.button} />
-        </View>
-        <View style={styles.homeScreenContainer}>
-          <VideoFeed></VideoFeed>
+      <View style={styles.homeScreenContainerData}>
+        <View style={styles.homeScreenContainerSubsection}>
+          <Ionicons name={'lock-closed-outline'} size={125} />
+          <SelectList
+            setSelected={val => setSelected(val)}
+            search={false}
+            data={data}
+            defaultOption={selected}
+            save="value"
+          />
         </View>
       </View>
+      <LockButton
+        style={styles.homeScreenContainerSubsection}
+        selected={selected}
+      />
+      <VideoFeed
+        style={styles.homeScreenContainerSubsection}
+        selected={selected}
+      />
     </View>
   );
 };
@@ -385,11 +390,27 @@ const styles = StyleSheet.create({
   },
 
   homeScreenContainer: {
+    display: 'flex',
     flexGrow: 1,
-    flexDirection: 'column',
-    padding: 8,
-    justifyContent: 'center',
+    padding: 16,
     alignContent: 'center',
+    flexDirection: 'column',
+  },
+
+  homeScreenContainerData: {
+    display: 'flex',
+    padding: 8,
+    flexDirection: 'column',
+    alignItems: 'center',
+  },
+
+  homeScreenContainerSubsection: {
+    margin: 20,
+    display: 'flex',
+    alignContent: 'center',
+    flexDirection: 'column',
+    alignItems: 'center',
+    padding: 8,
   },
 
   buttonBottom: {
@@ -400,9 +421,9 @@ const styles = StyleSheet.create({
   },
 
   button: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'gray',
+    padding: 10,
+    flexDirection: 'column',
+    justifyContent: 'space-around',
   },
 
   lockState: {
@@ -411,11 +432,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     letterSpacing: 0.25,
     color: 'white',
-  },
-
-  homeScreensectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
   },
   sectionTitle: {
     fontSize: 24,
