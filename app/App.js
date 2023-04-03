@@ -1,9 +1,9 @@
 import React, {useState} from 'react';
 import {
+  Alert,
   StyleSheet,
   Text,
   View,
-  Pressable,
   Button,
   FlatList,
   TouchableOpacity,
@@ -13,7 +13,6 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {SelectList} from 'react-native-dropdown-select-list';
-import {networkInterfaces} from 'os';
 
 let serv_url = 'http://10.154.2.38:3000/';
 const TabNav = createBottomTabNavigator();
@@ -96,15 +95,15 @@ const HomeScreen = ({navigation}) => {
     {key: '4', value: 'Device 4'},
     {key: '5', value: 'Deivce 5'},
   ];
-  const [selected, setSelected] = useState('Home Lock');
+  const [selected, setSelected] = useState(data);
   return (
     <View style={styles.homeScreenContainer}>
-      <View style={styles.sectionContainer}>
+      <View style={styles.homeScreensectionContainer}>
         <SelectList
           setSelected={val => setSelected(val)}
           search={false}
           data={data}
-          defaultOption={data[0]}
+          defaultOption={selected}
           save="value"
         />
         <View style={styles.homeScreenContainer}>
@@ -118,23 +117,45 @@ const HomeScreen = ({navigation}) => {
   );
 };
 
+const StatusIcon = ({state, status}) => {
+  const size = 50;
+  const fail = 'DarkRed';
+  const success = 'DarkGreen';
+  if (status == 'Connection') {
+    iconName = 'pulse-outline';
+    color = state ? {success} : {fail};
+  } else if (status == 'VideoConnection') {
+    iconName = state ? 'analytics-outline' : 'analytics-outline';
+    color = state ? {success} : {fail};
+  } else if (status == 'Visitor') {
+    iconName = 'people-circle-outline';
+    color = state ? {success} : {fail};
+  }
+
+  return (
+    <View style={styles.deviceContainerStatusValid}>
+      <Ionicons name={iconName} size={size} color={color} />
+    </View>
+  );
+};
+
 const DeviceList = ({data}) => {
+  const [deviceName, setDevice] = useState(data);
+  const [deviceConnection, setConnection] = useState(false);
+  const [deviceVideoConnection, setConnectionVideo] = useState(false);
+  const [deviceVisitor, setVisitors] = useState(false);
+
   const renderItem = ({item}) => {
     return (
-      <View style={styles.item}>
-        <View style={styles.nameContainer}>
-          <Text style={styles.sectionTitle}>{item.name}</Text>
-        </View>
-        <View style={styles.buttonsContainer}>
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.lockState}>Button 1</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.lockState}>Button 2</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.lockState}>Button 3</Text>
-          </TouchableOpacity>
+      <View style={styles.deviceMainContainer}>
+        <View style={styles.deviceContainerData}>
+          <Text style={styles.deviceContainerData}>{item.name}</Text>
+          <StatusIcon state={deviceConnection} status={'Connection'} />
+          <StatusIcon
+            state={deviceVideoConnection}
+            status={'VideoConnection'}
+          />
+          <StatusIcon state={deviceVisitor} status={'Visitor'} />
         </View>
       </View>
     );
@@ -153,8 +174,11 @@ const DeviceList = ({data}) => {
 
 const MyDevices = ({navigation}) => {
   data = [
-    {id: '1', name: 'Device 1'},
-    {id: '2', name: 'Device 2'},
+    {id: '1', name: 'Front Door'},
+    {id: '2', name: 'Back Door'},
+    {id: '3', name: 'Garage Door'},
+    {id: '4', name: 'Device 4'},
+    {id: '5', name: 'Deivce 5'},
   ];
   return (
     <View style={styles.sectionContainer}>
@@ -172,7 +196,24 @@ const VisitorList = ({visitordata}) => {
   const [visitors, setVisitors] = useState(visitordata);
 
   function removeVisitor({removeItem}) {
-    return setVisitors(visitors.filter(item => item.id !== removeItem.id));
+    Alert.alert(
+      'Confrim Visitor Removal',
+      'Are you sure you want to remove this visitor?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          test: 'OK',
+          onPress: () => {
+            return setVisitors(
+              visitors.filter(item => item.id !== removeItem.id),
+            );
+          },
+        },
+      ],
+    );
   }
 
   const renderItem = ({item}) => {
@@ -220,37 +261,37 @@ const Visitors = ({navigation}) => {
   visitordata = [
     {
       id: '1',
-      name: 'Test',
+      name: 'Luke',
       dateLastSeen: '4/3/2023 1:10PM',
       profileImage: './test_img/test.png',
     },
     {
       id: '2',
-      name: 'Test2',
+      name: 'James',
       dateLastSeen: '4/3/2023 1:10PM',
       profileImage: './test_img/test.png',
     },
     {
       id: '3',
-      name: 'Test3',
+      name: 'Warren',
       dateLastSeen: '4/3/2023 1:10PM',
       profileImage: './test_img/test.png',
     },
     {
       id: '4',
-      name: 'Test4',
+      name: 'Chris',
       dateLastSeen: '4/3/2023 1:10PM',
       profileImage: './test_img/test.png',
     },
     {
       id: '5',
-      name: 'Test5',
+      name: 'Dr. Silaghi',
       dateLastSeen: '4/3/2023 1:10PM',
       profileImage: './test_img/test.png',
     },
     {
       id: '6',
-      name: 'Test6',
+      name: 'Dr. Chan',
       dateLastSeen: '4/3/2023 1:10PM',
       profileImage: './test_img/test.png',
     },
@@ -259,6 +300,28 @@ const Visitors = ({navigation}) => {
 };
 
 const styles = StyleSheet.create({
+  deviceMainContainer: {
+    backgroundColor: 'white',
+    height: 150,
+    borderRadius: 10,
+    gap: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+  },
+  deviceContainerData: {
+    fontSize: 35,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    flexGrow: 1,
+  },
+  deviceContainerStatusValid: {
+    padding: 5,
+    height: 60,
+    width: 60,
+    backgroundColor: 'DarkGreen',
+  },
   visitorsContainer: {
     height: 200,
     backgroundColor: 'white',
@@ -313,8 +376,8 @@ const styles = StyleSheet.create({
     right: 10,
     width: 55,
     height: 55,
-    borderRadius: 50,
-
+    borderRadius: 60,
+    shadowColor: 'black',
     flexDirection: 'column',
     alignContent: 'center',
     justifyContent: 'center',
@@ -322,8 +385,9 @@ const styles = StyleSheet.create({
   },
 
   homeScreenContainer: {
+    flexGrow: 1,
     flexDirection: 'column',
-    padding: 16,
+    padding: 8,
     justifyContent: 'center',
     alignContent: 'center',
   },
@@ -349,7 +413,7 @@ const styles = StyleSheet.create({
     color: 'white',
   },
 
-  sectionContainer: {
+  homeScreensectionContainer: {
     marginTop: 32,
     paddingHorizontal: 24,
   },
