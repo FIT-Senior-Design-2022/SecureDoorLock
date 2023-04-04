@@ -53,7 +53,7 @@ const App = Section => {
 const LockButton = ({selected}) => {
   const [lockState, setlockState] = useState('Unlock');
 
-  async function Unlock(lockState) {
+  async function Unlock() {
     const body = JSON.stringify({
       lockState: lockState,
     });
@@ -82,13 +82,14 @@ const VideoFeed = ({selected}) => {
       <Button
         style={styles.button}
         title="Live Feed"
-        onPress={() => viewFeed()}></Button>
+        onPress={() => viewFeed()}
+      />
     </View>
   );
 };
 
 const HomeScreen = ({navigation}) => {
-  data = [
+  var data = [
     {key: '1', value: 'Front Door'},
     {key: '2', value: 'Back Door'},
     {key: '3', value: 'Garage Door'},
@@ -126,6 +127,8 @@ const StatusIcon = ({state, status}) => {
   const size = 50;
   const fail = 'DarkRed';
   const success = 'DarkGreen';
+  let iconName = '';
+  let color = '';
   if (status == 'Connection') {
     iconName = 'pulse-outline';
     color = state ? {success} : {fail};
@@ -178,7 +181,7 @@ const DeviceList = ({data}) => {
 };
 
 const MyDevices = ({navigation}) => {
-  data = [
+  var data = [
     {id: '1', name: 'Front Door'},
     {id: '2', name: 'Back Door'},
     {id: '3', name: 'Garage Door'},
@@ -187,10 +190,10 @@ const MyDevices = ({navigation}) => {
   ];
   return (
     <View style={styles.sectionContainer}>
-      <DeviceList data={data}></DeviceList>
+      <DeviceList data={data} />
       <View style={styles.sectionContainer}>
         <View style={styles.buttonBottom}>
-          <Button title="Add Device"></Button>
+          <Button title="Add Device" />
         </View>
       </View>
     </View>
@@ -263,7 +266,7 @@ const VisitorList = ({visitordata}) => {
 };
 
 const Visitors = ({navigation}) => {
-  visitordata = [
+  var visitordata = [
     {
       id: '1',
       name: 'Luke',
@@ -301,7 +304,7 @@ const Visitors = ({navigation}) => {
       profileImage: './test_img/test.png',
     },
   ];
-  return <VisitorList visitordata={visitordata}></VisitorList>;
+  return <VisitorList visitordata={visitordata} />;
 };
 
 const styles = StyleSheet.create({
