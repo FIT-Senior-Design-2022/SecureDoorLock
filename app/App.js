@@ -8,14 +8,20 @@ import {
   FlatList,
   TouchableOpacity,
   Image,
+  Modal,
+  TextInput,
+  TouchableHighlight,
 } from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {SelectList} from 'react-native-dropdown-select-list';
+import {launchImageLibrary} from 'react-native-image-picker';
 
-let serv_url = 'http://10.154.2.38:3000/';
+let serv_url = 'http://10.154.7.194:3000/';
 const TabNav = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
 function TabNavs() {
   return (
     <TabNav.Navigator
@@ -57,8 +63,25 @@ const LockButton = ({selected}) => {
     const body = JSON.stringify({
       lockState: lockState,
     });
-    fetch(serv_url + lockState); //add response code here
-    setlockState(lockState === 'Unlock' ? 'Lock' : 'Unlock');
+    console.debug('attempting Lock state change');
+    let response = await fetch(serv_url + lockState); //add response code here
+    if (response.ok) {
+      response = await response.json();
+      setlockState(response.lockState === 'Unlock' ? 'Lock' : 'Unlock');
+      console.debug('Lock state changed');
+    } else {
+      console.debug('There was an Error with Unlocking');
+      Alert.alert(
+        'Issue Connecting ',
+        'There seems to be an issue connecting to the lock',
+        [
+          {
+            text: 'OK',
+            style: 'OK',
+          },
+        ],
+      );
+    }
   }
 
   return (
@@ -130,7 +153,7 @@ const StatusIcon = ({state, status}) => {
     iconName = 'pulse-outline';
     color = state ? {success} : {fail};
   } else if (status == 'VideoConnection') {
-    iconName = state ? 'analytics-outline' : 'analytics-outline';
+    iconName = state ? 'videocam-outline' : 'videocam-outline';
     color = state ? {success} : {fail};
   } else if (status == 'Visitor') {
     iconName = 'people-circle-outline';
@@ -139,7 +162,7 @@ const StatusIcon = ({state, status}) => {
 
   return (
     <View style={styles.deviceContainerStatusValid}>
-      <Ionicons name={iconName} size={size} color={color} />
+      <Ionicons name={iconName} size={size} color={fail} />
     </View>
   );
 };
@@ -197,9 +220,46 @@ const MyDevices = ({navigation}) => {
   );
 };
 
-const VisitorList = ({visitordata}) => {
-  const [visitors, setVisitors] = useState(visitordata);
+const AddVisModal = ({selectedPhoto, modalState}) => {
+  async function selectImage() {
+    options = {
+      mediaType: 'photo',
+    };
+    const result = await launchImageLibrary(options);
+  }
+  return (
+    <Modal
+      transparent={true}
+      visible={modalState.addModelVisable}
+      onRequestClose={() => modalState.setaddModelVisable(false)}>
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'space-around',
+          alignItems: 'center',
+          backgroundColor: 'rgba(0, 0, 0, 0.75)',
+        }}>
+        <View style={styles.addVisitorsLayout}>
+          <Image
+            source={selectedPhoto}
+            style={styles.visitorsContainerProfileImage}
+          />
+          <Text style={styles.addVisitorsTitle}>Add New Visitor</Text>
+          <TextInput
+            placeholder="New Visitor"
+            style={styles.addVisitorsInput}
+          />
+          <Button on onPress={selectImage()} title="Upload Photo"></Button>
+          <Button title="Create Visitor"></Button>
+        </View>
+      </View>
+    </Modal>
+  );
+};
 
+const VisitorList = ({visitordata, navigation}) => {
+  const [visitors, setVisitors] = useState(visitordata);
+  const [addModelVisable, setaddModelVisable] = useState(false);
   function removeVisitor({removeItem}) {
     Alert.alert(
       'Confrim Visitor Removal',
@@ -222,6 +282,7 @@ const VisitorList = ({visitordata}) => {
   }
 
   const renderItem = ({item}) => {
+    console.debug(item.profileImage);
     return (
       <View style={styles.visitorsContainer}>
         <TouchableOpacity
@@ -234,7 +295,7 @@ const VisitorList = ({visitordata}) => {
           />
         </TouchableOpacity>
         <Image
-          source={{uri: item.profileImage}}
+          source={item.profileImage.toString()}
           style={styles.visitorsContainerProfileImage}
         />
         <View style={styles.visitorsContainerData}>
@@ -251,11 +312,13 @@ const VisitorList = ({visitordata}) => {
     <View>
       <FlatList
         data={visitors}
-        keyExtractor={item => item.id.toString()}
+        keyExtractor={item => item.id}
         extraData={visitors}
         renderItem={renderItem}
       />
-      <TouchableOpacity style={styles.visitorsContainerAddVisitor}>
+      <TouchableOpacity
+        onPress={() => setaddModelVisable(true)}
+        style={styles.visitorsContainerAddVisitor}>
         <Ionicons name={'person-add-outline'} size={35} color={'black'} />
       </TouchableOpacity>
     </View>
@@ -268,40 +331,40 @@ const Visitors = ({navigation}) => {
       id: '1',
       name: 'Luke',
       dateLastSeen: '4/3/2023 1:10PM',
-      profileImage: './test_img/test.png',
+      profileImage: require('./assets/luke.jpg'),
     },
     {
       id: '2',
       name: 'James',
       dateLastSeen: '4/3/2023 1:10PM',
-      profileImage: './test_img/test.png',
+      profileImage: require('./assets/james.jpg'),
     },
     {
       id: '3',
       name: 'Warren',
       dateLastSeen: '4/3/2023 1:10PM',
-      profileImage: './test_img/test.png',
+      profileImage: require('./assets/warren.jpg'),
     },
     {
       id: '4',
       name: 'Chris',
       dateLastSeen: '4/3/2023 1:10PM',
-      profileImage: './test_img/test.png',
+      profileImage: require('./assets/chris.jpg'),
     },
     {
       id: '5',
       name: 'Dr. Silaghi',
       dateLastSeen: '4/3/2023 1:10PM',
-      profileImage: './test_img/test.png',
+      profileImage: require('./assets/Silaghi.jpg'),
     },
     {
       id: '6',
       name: 'Dr. Chan',
       dateLastSeen: '4/3/2023 1:10PM',
-      profileImage: './test_img/test.png',
+      profileImage: require('./assets/chan.jpg'),
     },
   ];
-  return <VisitorList visitordata={visitordata}></VisitorList>;
+  return <VisitorList navigation={navigation} visitordata={visitordata} />;
 };
 
 const styles = StyleSheet.create({
@@ -377,7 +440,7 @@ const styles = StyleSheet.create({
   visitorsContainerAddVisitor: {
     position: 'absolute',
     backgroundColor: 'lightskyblue',
-    top: 590,
+    top: 540,
     right: 10,
     width: 55,
     height: 55,
@@ -388,7 +451,46 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-
+  addVisitorsModal: {
+    backgroundColor: 'red',
+    flex: 1,
+    alignitems: 'center',
+    justifycontent: 'center',
+  },
+  addVisitorsBackground: {
+    flex: 1,
+    flexdirection: 'column',
+    backgroundColor: 'Grey',
+  },
+  addVisitorsLayout: {
+    height: '50%',
+    width: '80%',
+    borderRadius: 15,
+    borderWidth: 2,
+    padding: 16,
+    backgroundColor: 'white',
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignContent: 'center',
+  },
+  addVisitorsTitle: {
+    fontWeight: 'bold',
+    fontSize: 22,
+    padding: 10,
+  },
+  addVisitorsPhotoUpload: {
+    padding: 10,
+    borderWidth: 1,
+    borderRadius: 25,
+  },
+  addVisitorsInput: {
+    borderColor: 'gray',
+    width: '80%',
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingBottom: 10,
+  },
   homeScreenContainer: {
     display: 'flex',
     flexGrow: 1,
