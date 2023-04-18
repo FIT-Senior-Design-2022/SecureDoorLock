@@ -6,12 +6,16 @@ import json
 import asyncio
 import RPi.GPIO as GPIO
 import threading
+import os
+import subprocess
+import sys
 
 # Constants
 S3_BUCKET = 'ckieferbucket'
 AWS_REGION = 'us-west-2'
-COLLECTION_ID = 'collection-id'
-SERVER_URL = 'server-url'
+COLLECTION_ID = 'face-collection'
+SERVER_URL = 'ws://10.154.10.8:3000'
+RTMP_URL = 'rtmp://10.154.6.248:1935/live/stream'
 
 # Initialize AWS Rekognition client and GPIO
 rekognition = boto3.client('rekognition', region_name=AWS_REGION)
@@ -37,7 +41,6 @@ def lock_door():
     GPIO.output(GPIO_PIN_1, GPIO.LOW)
     GPIO.output(GPIO_PIN_2, GPIO.LOW)
 
-    
     return True
 
 def unlock_door():
@@ -52,9 +55,7 @@ def unlock_door():
     GPIO.output(GPIO_PIN_1, GPIO.LOW)
     GPIO.output(GPIO_PIN_2, GPIO.LOW)
 
-    
     return False
-
 
 websocket = None
 
@@ -74,17 +75,16 @@ async def websocket_client(uri):
                         process_server_message(response)
         except websockets.ConnectionClosed:
             print("Connection lost: trying to reconnect...")
-            await asyncio.sleep(3)  # Wait for 5 seconds before attempting to reconnect
-            
+            await asyncio.sleep(5)  # Wait for 5 seconds before attempting to reconnect
+
         except asyncio.TimeoutError:
             print("Timeout: trying to reconnect...")
-            await asyncio.sleep(3)  # Wait for 5 seconds before attempting to reconnect
+            await asyncio.sleep(5)  # Wait for 5 seconds before attempting to reconnect
 
 async def send_message(message):
     global websocket
     if websocket is not None:
         await websocket.send(message)
-        
 
 async def process_server_message(response, face=True):
     command_data = json.loads(response)
@@ -98,110 +98,93 @@ async def process_server_message(response, face=True):
                 time.sleep(10)  # Keep the door unlocked for 10 seconds
                 lock_door()
             return face
-            
 
 def upload_to_s3(image_path):
     s3 = boto3.client('s3')
     s3.upload_file(image_path, S3_BUCKET, image_path)
-    return f"https://{S3_BUCKET}.s3.amazonaws.com/{image_path}"
+    return image_path
 
 def search_face_in_collection(s3_image_url):
     response = rekognition.search_faces_by_image(
-        CollectionId=COLLECTION_ID,
+    CollectionId=COLLECTION_ID,
+    Image={
+    'S3Object': {
+        'Bucket': S3_BUCKET,
+        'Name': s3_image_url
+        }
+    },
+    FaceMatchThreshold=85,
+    MaxFaces=1
+    )
+    if len(response['FaceMatches']) > 0:
+        print("known")
+        return 'Known Visitor: ' + response['FaceMatches'][0]['Face']['ExternalImageId']
+    else:
+        print("unknown")
+        return 'Unknown Visitor'
+    
+def detect_faces(s3_image_url):
+    response = rekognition.detect_faces(
         Image={
             'S3Object': {
                 'Bucket': S3_BUCKET,
                 'Name': s3_image_url
             }
         },
-        FaceMatchThreshold=85,
-        MaxFaces=1
+        Attributes=['ALL']
     )
+    face_details = response['FaceDetails']
+    return len(face_details) > 0
 
-    if len(response['FaceMatches']) > 0:
-        return 'Known Visitor: ' + response['FaceMatches'][0]['Face']['ExternalImageId']
-    else:
-        return 'Unknown Visitor'
-
+    
 def main():
-    cap = cv2.VideoCapture(0)
-
-    door_status = lock_door()
-    
-    # Start a separate thread to listen for server input and keep the connection open
-    server_input_thread = threading.Thread(target=lambda: asyncio.run(websocket_client(SERVER_URL)))
-    server_input_thread.start()
-    
+    # Start the FFmpeg process for streaming video to Nginx
+    ffmpeg_stream_cmd = (
+        f"ffmpeg -f video4linux2 -i /dev/video0 -vf fps=1 -update 1 frame.jpg "
+        f"-c:v libx264 -f flv {RTMP_URL}"
+    )
+    ffmpeg_process = subprocess.Popen(ffmpeg_stream_cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     face_detected = False
+    
+    # Add a delay to wait for the frame.jpg file to be created
+    time.sleep(1)
 
     while True:
-        # Capture a video frame
-        ret, frame = cap.read()
-        if not ret:
-            break
+        # Check if the frame.jpg file exists
+        
+        if os.path.isfile('frame.jpg'):
+            # Read the frame
+            frame = cv2.imread('frame.jpg')
 
-        if not face_detected:
-            # Save the frame as an image file
-            frame_filename = 'frame.jpg'
-            cv2.imwrite(frame_filename, frame)
+            cv2.imshow('Frame', frame)
+            cv2.waitKey(1000)
 
-            # Upload the image to S3
-            s3_image_url = upload_to_s3(frame_filename)
+            if not face_detected:
+                # Upload the image to s3
+                s3_image_url = upload_to_s3('frame.jpg')
 
-            # Check if there's a face in the image
-            response = rekognition.detect_faces(
-                Image={
-                    'S3Object': {
-                        'Bucket': S3_BUCKET,
-                        'Name': s3_image_url
-                    }
-                },
-                Attributes=['ALL']
-            )
+                # Check if there's a face in the image
+                face_detected = detect_faces(s3_image_url)
+                print(face_detected)
+                if face_detected:
+                    print("Face detected")
 
-            face_details = response['FaceDetails']
-            if len(face_details) > 0:
-                face_detected = True
+                    # Check if the person is in the approved list
+                    guest_name = search_face_in_collection(s3_image_url)
 
-                # Check if the person is in the approved list
-                guest_name = search_face_in_collection(s3_image_url)
+                    print(guest_name)
 
-                # Notify the server about the face detection and guest_name
-                send_message(json.dumps({
-                    'type': 'face_detected',
-                    'content':  guest_name
-                }))
-
+                time.sleep(1)  # Add a delay to prevent overloading the system
         else:
-            # Forward the video feed to the server
-            ret, buffer = cv2.imencode('.jpg', frame)
-            await send_message(json.dumps({
-                'type': 'video_feed',
-                'content': buffer.tobytes()
-            }))
-            
-            # Check if the server received a response from the user
-            response = None  # Reset the response variable
-            if websocket and websocket.open:
-                try:
-                    response = await asyncio.wait_for(websocket.recv(), timeout=1)
-                except asyncio.TimeoutError:
-                    pass  # No response received within the timeout
-            
-            if response:
-                process_server_message(response)
+            print("no face detected")
 
-                # Check if the response is of the 'unlock' type
-                decision_data = json.loads(response)
-
-                if decision_data.get('type', '') == 'unlock':
-                    # Stop forwarding the video feed
-                    face_detected = False
-
-
-    cap.release()
+    # Terminate the FFmpeg process when the script ends
+    ffmpeg_process.terminate()
     cv2.destroyAllWindows()
+    sys.exit(0)
 
+    
 if __name__ == '__main__':
     main()
+
