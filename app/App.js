@@ -10,7 +10,6 @@ import {
   Image,
   Modal,
   TextInput,
-  TouchableHighlight,
 } from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
@@ -57,25 +56,38 @@ const App = Section => {
   );
 };
 
-const LockButton = ({selected}) => {
-  const [lockState, setlockState] = useState('Unlock');
+const LockButton = () => {
+  const [lockState, setLockState] = useState('Unlock');
 
-  async function Unlock(selected) {
-    const body = JSON.stringify({
-      lockState: lockState,
-    });
-    let response;
+  async function Unlock() {
     try {
-      response = await fetch(serv_url + lockState);
+      await fetch(`${serv_url}${lockState}`)
+        .then(async serverResponse => {
+          if (serverResponse.ok) {
+            try {
+              return await serverResponse.json();
+            } catch (err) {
+              /* no need to catch, just need to throw in the next block scope before the final */
+            }
+
+            throw new Error('Response was unable to be decoded as JSON');
+          }
+
+          throw new Error('Response form server was not ok');
+        })
+        .then(responseBody => {
+          // Should be JSON at this phase
+          setLockState(responseBody.lockState === 'Unlock' ? 'Unlock' : 'Lock');
+        })
+        .catch(err => {
+          return err;
+        });
     } catch (error) {
-      console.debug(error);
-    }
-    if (response.ok) {
-      response = await response.json();
-      setlockState(response.lockState === 'Unlock' ? 'Unlock' : 'Lock');
-      console.debug(lockState);
-    } else {
-      console.debug('There was an Error with Unlocking' + {selected});
+      console.debug(
+        `Unable to complete "${lockState}" operation, see following error for details`,
+        error,
+      );
+
       Alert.alert(
         'Issue Connecting ',
         'There seems to be an issue connecting to the lock ',
@@ -91,7 +103,7 @@ const LockButton = ({selected}) => {
 
   return (
     <TouchableOpacity
-      onPress={() => Unlock(selected)}
+      onPress={Unlock}
       style={{
         backgroundColor: 'lightgrey',
         borderRadius: 10,
@@ -116,7 +128,7 @@ const VideoFeed = ({selected, url, videoActive, setVideoActive}) => {
     if (response.ok) {
       response = await response.json();
       url = response.url;
-      console.debug(currentConnection);
+      // console.debug(currentConnection);
     } else {
       console.debug('There was an Error with Unlocking' + {selected});
       Alert.alert(
@@ -282,9 +294,9 @@ const MyDevices = ({navigation}) => {
 };
 
 function AddVisModal({addModelVisable, changeState}) {
-  [selectedPhoto, setSelectedPhoto] = useState(null);
+  const [selectedPhoto, setSelectedPhoto] = useState(null);
   async function selectImage() {
-    options = {
+    const options = {
       mediaType: 'photo',
     };
     const result = await launchImageLibrary(options);
