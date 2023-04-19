@@ -19,7 +19,7 @@ import {SelectList} from 'react-native-dropdown-select-list';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {NodePlayerView} from 'react-native-nodemediaclient';
 
-let serv_url = 'http://10.154.4.171:3000/';
+let serv_url = 'http://192.168.86.250:3000/';
 const TabNav = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 function TabNavs() {

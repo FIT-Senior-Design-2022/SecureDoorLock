@@ -1,7 +1,7 @@
 const http = require("http");
 const fs = require("fs");
 const WebSocket = require("ws");
-const hostname = "10.154.4.171";
+const hostname = "0.0.0.0";
 
 const httpPort = 3000;
 const wsPort = 3001;
@@ -48,9 +48,9 @@ const server = http.createServer(options, (req, res) => {
         doorStatus: "Unlock",
         lockState: "Lock",
       };
-      res.end(JSON.stringify(responseData));
-      console.log("Lock request received from mobile app");
     }
+    res.end(JSON.stringify(responseData));
+    console.log("Lock request received from mobile app");
   } else if (req.url === "/VideoFeed") {
     if (doorlock) {
       doorlock.send("Command:VideoFeed");
@@ -58,11 +58,12 @@ const server = http.createServer(options, (req, res) => {
       responseData = {
         url: doorlock.url,
       };
+
       console.log("URL Sent");
     } else {
       res.writeHead(502, { "Content-Type": "application/json" });
     }
-    res.end();
+    res.end(JSON.stringify(responseData));
     console.log("Video request received from mobile app");
   } else {
     res.writeHead(404);
