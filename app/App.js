@@ -18,8 +18,9 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {SelectList} from 'react-native-dropdown-select-list';
 import {launchImageLibrary} from 'react-native-image-picker';
+import {NodePlayerView} from 'react-native-nodemediaclient';
 
-let serv_url = 'http://10.154.7.194:3000/';
+let serv_url = 'http://10.154.4.171:3000/';
 const TabNav = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 function TabNavs() {
@@ -59,21 +60,25 @@ const App = Section => {
 const LockButton = ({selected}) => {
   const [lockState, setlockState] = useState('Unlock');
 
-  async function Unlock() {
+  async function Unlock(selected) {
     const body = JSON.stringify({
       lockState: lockState,
     });
-    console.debug('attempting Lock state change');
-    let response = await fetch(serv_url + lockState); //add response code here
+    let response;
+    try {
+      response = await fetch(serv_url + lockState);
+    } catch (error) {
+      console.debug(error);
+    }
     if (response.ok) {
       response = await response.json();
-      setlockState(response.lockState === 'Unlock' ? 'Lock' : 'Unlock');
-      console.debug('Lock state changed');
+      setlockState(response.lockState === 'Unlock' ? 'Unlock' : 'Lock');
+      console.debug(lockState);
     } else {
-      console.debug('There was an Error with Unlocking');
+      console.debug('There was an Error with Unlocking' + {selected});
       Alert.alert(
         'Issue Connecting ',
-        'There seems to be an issue connecting to the lock',
+        'There seems to be an issue connecting to the lock ',
         [
           {
             text: 'OK',
@@ -85,33 +90,69 @@ const LockButton = ({selected}) => {
   }
 
   return (
-    <View>
-      <Button
-        style={styles.button}
-        title={lockState}
-        onPress={() => Unlock(lockState)}
-      />
-    </View>
+    <TouchableOpacity
+      onPress={() => Unlock(selected)}
+      style={{
+        backgroundColor: 'lightgrey',
+        borderRadius: 10,
+        height: 160,
+        width: 160,
+      }}>
+      <View>
+        <Ionicons
+          size={150}
+          name={
+            lockState === 'Lock' ? 'lock-closed-outline' : 'lock-open-outline'
+          }
+        />
+      </View>
+    </TouchableOpacity>
   );
 };
 
-const VideoFeed = ({selected}) => {
+const VideoFeed = ({selected, url, videoActive, setVideoActive}) => {
   async function viewFeed() {
-    fetch(serv_url + 'VideoFeed');
-    //We need to start a new component here and change the current view
+    let response = await fetch(serv_url + 'VideoFeed');
+    if (response.ok) {
+      response = await response.json();
+      url = response.url;
+      console.debug(currentConnection);
+    } else {
+      console.debug('There was an Error with Unlocking' + {selected});
+      Alert.alert(
+        'Issue Connecting ',
+        'There seems to be an issue connecting to the lock ',
+        [
+          {
+            text: 'OK',
+            style: 'OK',
+          },
+        ],
+      );
+    }
   }
+
   return (
-    <View>
-      <Button
-        style={styles.button}
-        title="Live Feed"
-        onPress={() => viewFeed()}
-      />
-    </View>
+    <TouchableOpacity
+      onPress={() => {
+        viewFeed(selected);
+        setVideoActive(!videoActive);
+      }}
+      style={{
+        backgroundColor: 'lightgrey',
+        borderRadius: 10,
+        height: 160,
+        width: 160,
+      }}>
+      <View style={{alignItems: 'center'}}>
+        <Ionicons size={150} name="videocam-outline" />
+      </View>
+    </TouchableOpacity>
   );
 };
 
 const HomeScreen = ({navigation}) => {
+  var url;
   var data = [
     {key: '1', value: 'Front Door'},
     {key: '2', value: 'Back Door'},
@@ -119,12 +160,24 @@ const HomeScreen = ({navigation}) => {
     {key: '4', value: 'Device 4'},
     {key: '5', value: 'Deivce 5'},
   ];
+  const [videoActive, setVideoActive] = useState(true);
   const [selected, setSelected] = useState(data);
+
   return (
     <View style={styles.homeScreenContainer}>
+      <NodePlayerView
+        style={{height: 300}}
+        ref={vp => {
+          this.vp = vp;
+        }}
+        inputUrl={'rtmp://10.154.6.105:1935/live/stream'}
+        scaleMode={'ScaleAspectFit'}
+        bufferTime={300}
+        maxBufferTime={1000}
+        autoplay={true}
+      />
       <View style={styles.homeScreenContainerData}>
         <View style={styles.homeScreenContainerSubsection}>
-          <Ionicons name={'lock-closed-outline'} size={125} />
           <SelectList
             setSelected={val => setSelected(val)}
             search={false}
@@ -134,14 +187,19 @@ const HomeScreen = ({navigation}) => {
           />
         </View>
       </View>
-      <LockButton
-        style={styles.homeScreenContainerSubsection}
-        selected={selected}
-      />
-      <VideoFeed
-        style={styles.homeScreenContainerSubsection}
-        selected={selected}
-      />
+      <View style={styles.homeScreenContainerInput}>
+        <LockButton
+          style={styles.homeScreenContainerSubsection}
+          selected={selected.value}
+        />
+        <VideoFeed
+          videoActive={videoActive}
+          setVideoActive={() => setVideoActive(!videoActive)}
+          style={styles.homeScreenContainerSubsection}
+          selected={selected}
+          url={url}
+        />
+      </View>
     </View>
   );
 };
@@ -223,18 +281,20 @@ const MyDevices = ({navigation}) => {
   );
 };
 
-const AddVisModal = ({selectedPhoto, modalState}) => {
+function AddVisModal({addModelVisable, changeState}) {
+  [selectedPhoto, setSelectedPhoto] = useState(null);
   async function selectImage() {
     options = {
       mediaType: 'photo',
     };
     const result = await launchImageLibrary(options);
+    setSelectedPhoto(result);
   }
   return (
     <Modal
       transparent={true}
-      visible={modalState.addModelVisable}
-      onRequestClose={() => modalState.setaddModelVisable(false)}>
+      visible={addModelVisable}
+      onRequestClose={() => changeState}>
       <View
         style={{
           flex: 1,
@@ -244,7 +304,7 @@ const AddVisModal = ({selectedPhoto, modalState}) => {
         }}>
         <View style={styles.addVisitorsLayout}>
           <Image
-            source={selectedPhoto}
+            source={selectedPhoto ? {uri: selectedPhoto.uri} : null}
             style={styles.visitorsContainerProfileImage}
           />
           <Text style={styles.addVisitorsTitle}>Add New Visitor</Text>
@@ -252,13 +312,16 @@ const AddVisModal = ({selectedPhoto, modalState}) => {
             placeholder="New Visitor"
             style={styles.addVisitorsInput}
           />
-          <Button on onPress={selectImage()} title="Upload Photo"></Button>
+          <Button
+            on
+            onPress={() => selectImage()}
+            title="Upload Photo"></Button>
           <Button title="Create Visitor"></Button>
         </View>
       </View>
     </Modal>
   );
-};
+}
 
 const VisitorList = ({visitordata, navigation}) => {
   const [visitors, setVisitors] = useState(visitordata);
@@ -285,9 +348,13 @@ const VisitorList = ({visitordata, navigation}) => {
   }
 
   const renderItem = ({item}) => {
-    console.debug(item.profileImage);
     return (
       <View style={styles.visitorsContainer}>
+        <AddVisModal
+          addModelVisable={addModelVisable}
+          changeState={() =>
+            setaddModelVisable(!addModelVisable)
+          }></AddVisModal>
         <TouchableOpacity
           onPress={() => removeVisitor({visitordata, removeItem: item})}
           style={styles.visitorsContainerbutton}>
@@ -499,6 +566,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     padding: 16,
     alignContent: 'center',
+    justifyContent: 'center',
     flexDirection: 'column',
   },
 
@@ -516,6 +584,19 @@ const styles = StyleSheet.create({
     flexDirection: 'column',
     alignItems: 'center',
     padding: 8,
+  },
+  homeScreenContainerInput: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignContent: 'flex-start',
+    justifyContent: 'space-around',
+  },
+  backgroundVideo: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    bottom: 0,
+    right: 0,
   },
 
   buttonBottom: {

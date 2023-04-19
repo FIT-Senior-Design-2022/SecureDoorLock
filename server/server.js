@@ -1,12 +1,13 @@
 const http = require("http");
 const fs = require("fs");
 const WebSocket = require("ws");
-const hostname = "10.154.7.194";
+const hostname = "10.154.4.171";
 
 const httpPort = 3000;
 const wsPort = 3001;
 
 var doorlock;
+var doorURL;
 
 const options = {
   key: fs.readFileSync("../server/secrets/key.pem"),
@@ -17,11 +18,11 @@ const server = http.createServer(options, (req, res) => {
   var responseData;
   if (req.url === "/Unlock") {
     // Handle unlock request from the mobile app
-    if (doorlock !== undefined && doorlock === "OPEN") {
+    if (doorlock) {
       doorlock.send("Command:Unlock");
       res.writeHead(200, { "Content-Type": "application/json" });
       responseData = {
-        doorStatus: "Unlocked",
+        doorStatus: "Unlock",
         lockState: "Lock",
       };
     } else {
@@ -34,7 +35,7 @@ const server = http.createServer(options, (req, res) => {
     res.end(JSON.stringify(responseData));
     console.log("Unlock request received from mobile app");
   } else if (req.url === "/Lock") {
-    if (doorlock !== undefined && doorlock === "OPEN") {
+    if (doorlock) {
       doorlock.send("Command:Lock");
       res.writeHead(200, { "Content-Type": "application/json" });
       responseData = {
@@ -51,9 +52,13 @@ const server = http.createServer(options, (req, res) => {
       console.log("Lock request received from mobile app");
     }
   } else if (req.url === "/VideoFeed") {
-    if (doorlock !== undefined && doorlock === "OPEN") {
+    if (doorlock) {
       doorlock.send("Command:VideoFeed");
       res.writeHead(200, { "Content-Type": "application/json" });
+      responseData = {
+        url: doorlock.url,
+      };
+      console.log("URL Sent");
     } else {
       res.writeHead(502, { "Content-Type": "application/json" });
     }
@@ -75,7 +80,15 @@ server.listen(httpPort, hostname, () => {
 const wsServer = new WebSocket.Server({ port: wsPort });
 
 wsServer.on("connection", (socket) => {
-  doorlock = socket;
+  socket.on("message", (data) => {
+    content = JSON.parse(data);
+    console.log(content);
+    if (content.type === "init") {
+      doorURL = content.url;
+    }
+    doorlock = socket;
+  });
+
   console.log("New WebSocket connection");
 });
 
