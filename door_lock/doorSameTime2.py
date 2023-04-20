@@ -65,6 +65,7 @@ websocket = None
 
 async def websocket_client(uri):
     global websocket
+    global waiting_for_server
     while True:
         try:
             async with websockets.connect(uri) as ws:
@@ -79,6 +80,8 @@ async def websocket_client(uri):
                     if response:
                         print(response)
                         await process_server_message(response)
+                        if response == "Command:Unlock" or response == "Command:Lock":
+                            waiting_for_server = False
         except websockets.ConnectionClosed:
             print("Connection lost: trying to reconnect...")
             await asyncio.sleep(5)  # Wait for 5 seconds before attempting to reconnect
@@ -214,10 +217,7 @@ async def async_main():
                 # Remove the processed frame
                 os.remove(most_recent_frame)
                 face_detected = False
-            
-        decision_data = await websocket_client(SERVER_URL)
-        if decision_data == "Command:Unlock" or decision_data == "Command:Lock":
-            waiting_for_server = False
+    
     # Terminate the FFmpeg process when the script ends
     ffmpeg_process.terminate()
     cv2.destroyAllWindows()
