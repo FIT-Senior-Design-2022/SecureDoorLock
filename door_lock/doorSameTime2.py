@@ -97,10 +97,13 @@ async def send_message(message):
 
 async def process_server_message(response, face=True):
     decision = response
+    global waiting_for_server
     if response == 'Command:Unlock':
         unlock_door()
+        waiting_for_server = False
     if response == 'Command:Lock':
-        lock_door() 
+        lock_door()
+        waiting_for_server = False
     return decision
 
 def upload_to_s3(image_path):
@@ -156,6 +159,7 @@ async def async_main():
     server_input_thread.start()
 
     face_detected = False
+    global waiting_for_server
     waiting_for_server = False
 
     # Add a delay to wait for the first frame.jpg file to be created
