@@ -7,7 +7,6 @@ import {
   Button,
   FlatList,
   TouchableOpacity,
-  Image,
   Modal,
   TextInput,
 } from 'react-native';
@@ -18,6 +17,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import {SelectList} from 'react-native-dropdown-select-list';
 import {launchImageLibrary} from 'react-native-image-picker';
 import {NodePlayerView} from 'react-native-nodemediaclient';
+import PopupNotification from './components/PopupNotification';
 
 let serv_url = 'http://192.168.86.250:3000/';
 const TabNav = createBottomTabNavigator();
@@ -164,6 +164,8 @@ const VideoFeed = ({selected, url, videoActive, setVideoActive}) => {
 };
 
 const HomeScreen = ({navigation}) => {
+  var visitorName;
+  var visitorImage;
   var url;
   var data = [
     {key: '1', value: 'Front Door'},
@@ -174,15 +176,59 @@ const HomeScreen = ({navigation}) => {
   ];
   const [videoActive, setVideoActive] = useState(true);
   const [selected, setSelected] = useState(data);
+  const [isVisitor, setVisitor] = useState(setInterval(fecthFace, 3000));
+
+  const fecthFace = async () => {
+    try {
+      await fetch(`${serv_url}/getVisitor`)
+        .then(async serverResponse => {
+          if (serverResponse.ok) {
+            try {
+              return await serverResponse.json();
+            } catch (err) {
+              /* no need to catch, just need to throw in the next block scope before the final */
+            }
+
+            throw new Error('Response was unable to be decoded as JSON');
+          }
+
+          throw new Error('Response form server was not ok');
+        })
+        .then(responseBody => {
+          // Should be JSON at this phase
+          if (responseBody.isDetected) {
+            visitorImage = responseBody.faceImage;
+            visitorName = responseBody.content.split(': ')[1];
+            return true;
+          }
+        })
+        .catch(err => {
+          return err;
+        });
+    } catch (error) {
+      console.debug(
+        `Unable to complete fetchFace operation, see following error for details`,
+        error,
+      );
+    }
+    return false;
+  };
 
   return (
     <View style={styles.homeScreenContainer}>
+      <PopupNotification
+        showPopup={isVisitor}
+        imageSource={`data:image/jpg;base64,${visitorImage}`}
+        visitorName={visitorName}
+        onUnlock={() => console.debug(fetch(`${serv_url}Unlock`))}
+        onDeny={() => console.debug('deny')}
+      />
       <NodePlayerView
         style={{height: 300}}
         ref={vp => {
           this.vp = vp;
         }}
-        inputUrl={'rtmp://10.154.6.105:1935/live/stream'}
+        inputUrl={`rtmp://10.154.0.110:1935/live/stream`}
         scaleMode={'ScaleAspectFit'}
         bufferTime={300}
         maxBufferTime={1000}

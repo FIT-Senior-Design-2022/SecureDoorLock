@@ -8,6 +8,8 @@ const wsPort = 3001;
 
 var doorlock;
 var doorURL;
+var isDetected;
+var faceImage;
 
 const options = {
   key: fs.readFileSync("../server/secrets/key.pem"),
@@ -53,13 +55,25 @@ const server = http.createServer(options, (req, res) => {
     console.log("Lock request received from mobile app");
   } else if (req.url === "/VideoFeed") {
     if (doorlock) {
-      doorlock.send("Command:VideoFeed");
       res.writeHead(200, { "Content-Type": "application/json" });
       responseData = {
         url: doorlock.url,
       };
 
       console.log("URL Sent");
+    } else {
+      res.writeHead(502, { "Content-Type": "application/json" });
+    }
+    res.end(JSON.stringify(responseData));
+    console.log("Video request received from mobile app");
+  } else if (req.url === "/getVisitor") {
+    if (doorlock) {
+      doorlock.send("Command:VideoFeed");
+      res.writeHead(200, { "Content-Type": "application/json" });
+      responseData = {
+        isDetected: isDetected,
+        faceImage: faceImage, //Base64 encoded will decode on the other end
+      };
     } else {
       res.writeHead(502, { "Content-Type": "application/json" });
     }
@@ -86,6 +100,9 @@ wsServer.on("connection", (socket) => {
     console.log(content);
     if (content.type === "init") {
       doorURL = content.url;
+    } else if (content.type === "face_detected") {
+      isDetected = true;
+      content.image = faceImage;
     }
     doorlock = socket;
   });
